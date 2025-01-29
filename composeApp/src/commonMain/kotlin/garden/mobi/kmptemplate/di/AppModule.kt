@@ -8,6 +8,7 @@ import org.koin.dsl.includes
 import org.koin.dsl.koinConfiguration
 import org.koin.dsl.module
 import garden.mobi.kmptemplate.view.greeting.GreetingViewModel
+import garden.mobi.kmptemplate.view.second.SecondViewModel
 import garden.mobi.kmptemplate.domain.repository.UserRepository
 import garden.mobi.kmptemplate.data.repository.UserRepositoryImpl
 
@@ -21,4 +22,5 @@ val koinConfig = koinConfiguration {
 val appModule = module {
     singleOf(::UserRepositoryImpl) { bind<UserRepository>() }
     viewModelOf(::GreetingViewModel)
+    viewModelOf(::SecondViewModel)
 }

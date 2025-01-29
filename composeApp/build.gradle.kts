@@ -1,5 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -12,15 +10,15 @@ plugins {
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
     
     listOf(
-        iosX64(),
-        iosArm64(),
+//todo excluded iosX64 and iosArm64 as a temporary solution to shorten the build process taking 20 minutes before
+//        iosX64(),
+//        iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
@@ -49,6 +47,8 @@ kotlin {
             implementation(libs.koin.compose.viewmodel.nav)
 
             implementation(libs.kotlinx.serialization.json)
+
+            implementation(libs.orbit.mvi)
         }
     }
 }

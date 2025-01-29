@@ -1,34 +1,34 @@
-package garden.mobi.kmptemplate.view.greeting
+package garden.mobi.kmptemplate.view.second
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import composemultiplatformtemplate.composeapp.generated.resources.Res
-import composemultiplatformtemplate.composeapp.generated.resources.compose_multiplatform
+import composemultiplatformtemplate.composeapp.generated.resources.ic_chevron_left
+import garden.mobi.kmptemplate.view.second.SecondViewModel.SideEffect
+import garden.mobi.kmptemplate.view.second.SecondViewModel.State
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
-import garden.mobi.kmptemplate.view.greeting.GreetingViewModel.State
-import garden.mobi.kmptemplate.view.greeting.GreetingViewModel.SideEffect
 
 @Composable
-fun GreetingScreen(
+fun SecondScreen(
     navController: NavHostController,
-    viewModel: GreetingViewModel = koinViewModel(),
+    viewModel: SecondViewModel = koinViewModel(),
 ) {
     val state by viewModel.container.stateFlow.collectAsState()
 
@@ -49,39 +49,38 @@ fun GreetingScreen(
 @Composable
 private fun Screen(
     state: State,
-    viewModel: GreetingViewModel
+    viewModel: SecondViewModel
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-    ) {
-        Button(onClick = { viewModel.tapMeBtnClicked() }) {
-            Text("Tap me!")
-        }
-
-        AnimatedVisibility(state.showContent) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Second screen",
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { viewModel.backClicked() }) {
+                        Image(
+                            painter = painterResource(Res.drawable.ic_chevron_left),
+                            contentDescription = "Back",
+                        )
+                    }
+                },
+            )
+        },
+        content = { padding ->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(padding)
+                    .padding(horizontal = 16.dp)
             ) {
-                Image(
-                    painter = painterResource(Res.drawable.compose_multiplatform),
-                    contentDescription = null,
-                )
-
-                Text(
-                    text = state.greeting,
-                    textAlign = TextAlign.Center,
-                )
-
-                Button(onClick = { viewModel.goToSecondScreenBtnClicked() }) {
-                    Text("Go to second screen")
-                }
+                Text("Name received from route args: ${state.name}")
             }
         }
-    }
+    )
 }
 
 private fun handleSideEffect(
@@ -89,6 +88,6 @@ private fun handleSideEffect(
     navController: NavHostController,
 ) = sideEffect.apply {
     when(this) {
-        is SideEffect.Navigate -> navController.navigate(route)
+        is SideEffect.NavigateBack -> navController.navigateUp()
     }
 }

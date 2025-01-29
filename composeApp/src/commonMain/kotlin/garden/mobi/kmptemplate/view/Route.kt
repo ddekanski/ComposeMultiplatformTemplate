@@ -5,6 +5,9 @@ import kotlinx.serialization.Serializable
 sealed class Route {
 
     @Serializable
-    data class Greeting(val name: String) : Route()
+    data object Greeting : Route()
+
+    @Serializable
+    data class Second(val name: String) : Route()
 
 }
