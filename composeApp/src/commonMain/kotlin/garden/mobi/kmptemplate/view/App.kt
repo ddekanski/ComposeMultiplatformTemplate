@@ -5,6 +5,7 @@ import androidx.compose.runtime.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 import org.koin.compose.KoinApplication
@@ -18,10 +19,11 @@ fun App() {
         application = koinConfig()
     ){
         val navController = rememberNavController()
+
         MaterialTheme {
-            NavHost(navController = navController, startDestination = "home") {
-                composable("home") {
-                    GreetingScreen()
+            NavHost(navController = navController, startDestination = Route.Greeting(name = "NameFromArgs")) {
+                composable<Route.Greeting> { navBackStackEntry ->
+                    GreetingScreen(args = navBackStackEntry.toRoute())
                 }
             }
         }

@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
@@ -46,6 +47,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.koin.compose.viewmodel.nav)
+
+            implementation(libs.kotlinx.serialization.json)
         }
     }
 }

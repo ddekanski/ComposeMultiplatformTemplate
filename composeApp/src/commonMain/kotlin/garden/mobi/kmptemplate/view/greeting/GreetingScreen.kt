@@ -19,25 +19,45 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import composemultiplatformtemplate.composeapp.generated.resources.Res
 import composemultiplatformtemplate.composeapp.generated.resources.compose_multiplatform
+import garden.mobi.kmptemplate.view.Route
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun GreetingScreen(greetingViewModel: GreetingViewModel = koinViewModel()) {
+fun GreetingScreen(
+    args: Route.Greeting,
+    greetingViewModel: GreetingViewModel = koinViewModel(),
+) {
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }
-        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            Text("Name received from route args: ${args.name}")
+
             Button(onClick = { showContent = !showContent }) {
                 Text("Click me!")
             }
+
             AnimatedVisibility(showContent) {
                 val greeting = greetingViewModel.sayHello("Koin")
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting", textAlign = TextAlign.Center)
+                    Image(
+                        painter = painterResource(Res.drawable.compose_multiplatform),
+                        contentDescription = null,
+                    )
+
+                    Text(
+                        text = "Compose: $greeting",
+                        textAlign = TextAlign.Center,
+                    )
                 }
             }
         }
