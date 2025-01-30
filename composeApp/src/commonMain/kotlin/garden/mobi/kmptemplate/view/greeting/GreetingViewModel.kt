@@ -2,9 +2,13 @@ package garden.mobi.kmptemplate.view.greeting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import composemultiplatformtemplate.composeapp.generated.resources.Res
+import composemultiplatformtemplate.composeapp.generated.resources.hello_user_from_platform_name
+import composemultiplatformtemplate.composeapp.generated.resources.user_not_found
 import garden.mobi.kmptemplate.domain.repository.UserRepository
 import garden.mobi.kmptemplate.getPlatform
 import garden.mobi.kmptemplate.view.Route
+import org.jetbrains.compose.resources.getString
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.container
 
@@ -39,9 +43,12 @@ class GreetingViewModel(
         if (!state.showContent) {
             val foundUser = repository.findUser(state.name)
             val platform = getPlatform()
+            val greeting = foundUser?.let {
+                getString(Res.string.hello_user_from_platform_name, it, platform.name)
+            } ?: getString(Res.string.user_not_found)
             reduce {
                 state.copy(
-                    greeting = foundUser?.let { "Hello '$it' from ${platform.name}" } ?: "User not found!",
+                    greeting = greeting,
                     showContent = true,
                 )
             }

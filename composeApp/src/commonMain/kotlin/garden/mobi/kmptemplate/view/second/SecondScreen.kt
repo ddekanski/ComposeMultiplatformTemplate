@@ -17,11 +17,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import composemultiplatformtemplate.composeapp.generated.resources.Res
+import composemultiplatformtemplate.composeapp.generated.resources.back
 import composemultiplatformtemplate.composeapp.generated.resources.ic_chevron_left
+import composemultiplatformtemplate.composeapp.generated.resources.name_received_from_route_args
+import composemultiplatformtemplate.composeapp.generated.resources.second_screen_title
 import garden.mobi.kmptemplate.view.second.SecondViewModel.SideEffect
 import garden.mobi.kmptemplate.view.second.SecondViewModel.State
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -55,14 +59,14 @@ private fun Screen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Second screen",
+                        text = stringResource(Res.string.second_screen_title),
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { viewModel.backClicked() }) {
                         Image(
                             painter = painterResource(Res.drawable.ic_chevron_left),
-                            contentDescription = "Back",
+                            contentDescription = stringResource(Res.string.back),
                         )
                     }
                 },
@@ -76,7 +80,7 @@ private fun Screen(
                     .padding(padding)
                     .padding(horizontal = 16.dp)
             ) {
-                Text("Name received from route args: ${state.name}")
+                Text(stringResource(Res.string.name_received_from_route_args, state.name))
             }
         }
     )

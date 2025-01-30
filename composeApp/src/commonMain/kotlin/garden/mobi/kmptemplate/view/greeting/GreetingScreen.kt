@@ -18,10 +18,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import composemultiplatformtemplate.composeapp.generated.resources.Res
 import composemultiplatformtemplate.composeapp.generated.resources.compose_multiplatform
+import composemultiplatformtemplate.composeapp.generated.resources.go_to_second_screen
+import composemultiplatformtemplate.composeapp.generated.resources.tap_me
 import garden.mobi.kmptemplate.view.greeting.GreetingViewModel.SideEffect
 import garden.mobi.kmptemplate.view.greeting.GreetingViewModel.State
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -57,7 +60,7 @@ private fun Screen(
             .padding(horizontal = 16.dp)
     ) {
         Button(onClick = { viewModel.tapMeBtnClicked() }) {
-            Text("Tap me!")
+            Text(stringResource(Res.string.tap_me))
         }
 
         AnimatedVisibility(state.showContent) {
@@ -76,7 +79,7 @@ private fun Screen(
                 )
 
                 Button(onClick = { viewModel.goToSecondScreenBtnClicked() }) {
-                    Text("Go to second screen")
+                    Text(stringResource(Res.string.go_to_second_screen))
                 }
             }
         }
