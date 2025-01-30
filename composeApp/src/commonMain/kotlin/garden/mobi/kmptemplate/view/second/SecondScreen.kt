@@ -20,7 +20,6 @@ import composemultiplatformtemplate.composeapp.generated.resources.Res
 import composemultiplatformtemplate.composeapp.generated.resources.ic_chevron_left
 import garden.mobi.kmptemplate.view.second.SecondViewModel.SideEffect
 import garden.mobi.kmptemplate.view.second.SecondViewModel.State
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -39,7 +38,7 @@ fun SecondScreen(
 
     LaunchedEffect(viewModel) {
         launch {
-            viewModel.container.sideEffectFlow.collectLatest {
+            viewModel.container.sideEffectFlow.collect {
                 handleSideEffect(sideEffect = it, navController = navController)
             }
         }

@@ -18,12 +18,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import composemultiplatformtemplate.composeapp.generated.resources.Res
 import composemultiplatformtemplate.composeapp.generated.resources.compose_multiplatform
-import kotlinx.coroutines.flow.collectLatest
+import garden.mobi.kmptemplate.view.greeting.GreetingViewModel.SideEffect
+import garden.mobi.kmptemplate.view.greeting.GreetingViewModel.State
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
-import garden.mobi.kmptemplate.view.greeting.GreetingViewModel.State
-import garden.mobi.kmptemplate.view.greeting.GreetingViewModel.SideEffect
 
 @Composable
 fun GreetingScreen(
@@ -39,7 +38,7 @@ fun GreetingScreen(
 
     LaunchedEffect(viewModel) {
         launch {
-            viewModel.container.sideEffectFlow.collectLatest {
+            viewModel.container.sideEffectFlow.collect {
                 handleSideEffect(sideEffect = it, navController = navController)
             }
         }
