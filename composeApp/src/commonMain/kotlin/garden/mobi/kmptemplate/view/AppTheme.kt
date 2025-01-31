@@ -1,9 +1,6 @@
 package garden.mobi.kmptemplate.view
 
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import coil3.ImageLoader
@@ -16,11 +13,11 @@ fun AppTheme(
 ) {
     InitCoil()
 
-    val lightColors = lightColors(     primary = Color.PrimaryLight )
-    val darkColors = darkColors(     primary = Color.PrimaryDark )
-    val colors = if (isSystemInDarkTheme()) darkColors else lightColors
+    val colorScheme = MaterialTheme.colorScheme.copy(
+        primary = Color.PrimaryLight
+    )
 
-    MaterialTheme(colors = colors, content = content)
+    MaterialTheme(colorScheme = colorScheme, content = content)
 }
 
 @Composable

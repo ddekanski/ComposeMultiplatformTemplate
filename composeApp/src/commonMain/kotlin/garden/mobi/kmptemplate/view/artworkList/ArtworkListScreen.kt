@@ -11,14 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,7 +35,6 @@ import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import composemultiplatformtemplate.composeapp.generated.resources.Res
 import composemultiplatformtemplate.composeapp.generated.resources.artwork_list_screen_title
-import garden.mobi.kmptemplate.view.PrimaryLight
 import garden.mobi.kmptemplate.view.artworkList.ArtworkListViewModel.SideEffect
 import garden.mobi.kmptemplate.view.artworkList.ArtworkListViewModel.State
 import kotlinx.coroutines.launch
@@ -63,6 +62,7 @@ fun ArtworkListScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Screen(
     state: State,
@@ -70,16 +70,12 @@ private fun Screen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 title = {
                     Text(
                         text = stringResource(Res.string.artwork_list_screen_title),
                     )
                 },
-                elevation = 0.dp,
-                modifier = Modifier
-                    .background(color = Color.PrimaryLight)
-                    .statusBarsPadding()
             )
         },
         content = { padding ->
