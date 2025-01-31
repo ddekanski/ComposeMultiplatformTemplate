@@ -10,4 +10,10 @@ sealed class Route {
     @Serializable
     data class Second(val name: String) : Route()
 
+    @Serializable
+    data object ArtworkList : Route()
+
+    @Serializable
+    data class ArtworkDetails(val artworkId: String) : Route()
+
 }

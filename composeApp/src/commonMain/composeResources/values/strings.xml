@@ -5,5 +5,6 @@
     <string name="hello_user_from_platform_name">Hello %1$s from %2$s</string>
     <string name="back">Back</string>
     <string name="second_screen_title">Second screen</string>
+    <string name="artwork_list_screen_title">Art Institute of Chicago</string>
     <string name="name_received_from_route_args">Name received from route args: %1$s</string>
 </resources>
