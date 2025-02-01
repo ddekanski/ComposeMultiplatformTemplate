@@ -1,5 +1,8 @@
 package garden.mobi.kmptemplate.view.artworkDetails
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,16 +44,21 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ArtworkDetailsScreen(
     navController: NavHostController,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: ArtworkDetailsViewModel = koinViewModel(),
 ) {
     val state by viewModel.container.stateFlow.collectAsState()
 
     Screen(
         state = state,
-        viewModel = viewModel
+        viewModel = viewModel,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope,
     )
 
     LaunchedEffect(viewModel) {
@@ -62,13 +70,15 @@ fun ArtworkDetailsScreen(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun Screen(
     state: State,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: ArtworkDetailsViewModel,
 ) {
-    Box()
-    {
+    Box {
         IconButton(
             onClick = { viewModel.backClicked() },
             modifier = Modifier
@@ -83,30 +93,37 @@ private fun Screen(
             )
         }
 
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            state.imageUrl?.let {
+            with(sharedTransitionScope) {
                 AsyncImage(
                     model = state.imageUrl,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
+                        .sharedElement(
+                            sharedTransitionScope.rememberSharedContentState("${state.artworkId}-image"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        )
                         .fillMaxWidth()
                         .aspectRatio(1f)
+                )
 
+                Text(
+                    text = state.title,
+                    style = MaterialTheme.typography.headlineLarge,
+                    modifier = Modifier
+                        .sharedBounds(
+                            sharedTransitionScope.rememberSharedContentState("${state.artworkId}-title"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        )
+                        .padding(top = 24.dp)
+                        .padding(horizontal = 16.dp)
                 )
             }
-
-            Text(
-                text = state.title,
-                style = MaterialTheme.typography.headlineLarge,
-                modifier = Modifier
-                    .padding(top = 24.dp)
-                    .padding(horizontal = 16.dp)
-            )
 
             Text(
                 text = state.type,

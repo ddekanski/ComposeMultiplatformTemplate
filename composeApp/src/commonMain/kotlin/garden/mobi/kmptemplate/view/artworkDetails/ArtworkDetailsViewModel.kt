@@ -22,6 +22,7 @@ class ArtworkDetailsViewModel(
 ) : ContainerHost<ArtworkDetailsViewModel.State, ArtworkDetailsViewModel.SideEffect>, ViewModel() {
 
     data class State(
+        val artworkId: String,
         val title: String = "",
         val imageUrl: String? = null,
         val date: String = "",
@@ -36,12 +37,12 @@ class ArtworkDetailsViewModel(
         data object NavigateBack : SideEffect
     }
 
+    private val args: Route.ArtworkDetails by lazy { savedStateHandle.toRoute() }
+
     override val container = viewModelScope.container<State, SideEffect>(
-        initialState = State(),
+        initialState = State(artworkId = args.artworkId),
         onCreate = { onCreate() }
     )
-
-    private val args: Route.ArtworkDetails by lazy { savedStateHandle.toRoute() }
 
     private fun onCreate() = intent {
         artworkRepository

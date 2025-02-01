@@ -1,5 +1,8 @@
 package garden.mobi.kmptemplate.view.artworkList
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +35,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import composemultiplatformtemplate.composeapp.generated.resources.Res
@@ -44,15 +48,20 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ArtworkListScreen(
     navController: NavHostController,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: ArtworkListViewModel = koinViewModel(),
 ) {
     val state by viewModel.container.stateFlow.collectAsState()
 
     Screen(
         state = state,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope,
         viewModel = viewModel
     )
 
@@ -65,10 +74,12 @@ fun ArtworkListScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun Screen(
     state: State,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: ArtworkListViewModel,
 ) {
     Scaffold(
@@ -92,32 +103,46 @@ private fun Screen(
                     .fillMaxSize()
                     .padding(padding)
             ) {
-                items(items = state.artworks, key = { it.id }) {
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color.LightGray)
-                        .clickable { viewModel.artworkClicked(it.id) }
-                    ) {
-                        AsyncImage(
-                            model = it.imageUrl,
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        Text(
-                            text = it.title,
-                            fontSize = 10.sp,
-                            minLines = 1,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .padding(8.dp)
-                                .background(color = Color.LightGray.copy(alpha = .7f), shape = RoundedCornerShape(2.dp))
-                                .padding(horizontal = 4.dp)
-                        )
+                items(items = state.artworks, key = { it.id }) { artwork ->
+                    with (sharedTransitionScope) {
+                        Box(modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(Color.LightGray)
+                            .clickable { viewModel.artworkClicked(artwork.id) }
+                        ) {
+                            AsyncImage(
+                                model = artwork.imageUrl,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .sharedElement(
+                                        state = sharedTransitionScope.rememberSharedContentState("${artwork.id}-image"),
+                                        animatedVisibilityScope = animatedVisibilityScope,
+                                    )
+                                    .fillMaxSize()
+                            )
+
+                            Text(
+                                text = artwork.title,
+                                fontSize = 10.sp,
+                                minLines = 1,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .sharedBounds(
+                                        sharedTransitionScope.rememberSharedContentState("${artwork.id}-title"),
+                                        animatedVisibilityScope = animatedVisibilityScope,
+                                        zIndexInOverlay = 1f
+                                    )
+                                    .align(Alignment.BottomCenter)
+                                    .padding(8.dp)
+                                    .background(color = Color.LightGray.copy(alpha = .7f), shape = RoundedCornerShape(2.dp))
+                                    .padding(horizontal = 4.dp)
+                                    .zIndex(1f)
+                            )
+                        }
                     }
                 }
 
