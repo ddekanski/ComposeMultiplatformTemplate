@@ -14,6 +14,10 @@ sealed class Route {
     data object ArtworkList : Route()
 
     @Serializable
-    data class ArtworkDetails(val artworkId: String) : Route()
+    data class ArtworkDetails(
+        val artworkId: String,
+        val imageUrl: String? = null,
+        val imagePlaceholderMemoryCacheKey: String? = null,
+    ) : Route()
 
 }

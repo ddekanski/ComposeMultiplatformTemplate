@@ -25,6 +25,7 @@ class ArtworkDetailsViewModel(
         val artworkId: String,
         val title: String = "",
         val imageUrl: String? = null,
+        val imagePlaceholderMemoryCacheKey: String? = null,
         val date: String = "",
         val description: String? = null,
         val artist: String = "",
@@ -40,7 +41,11 @@ class ArtworkDetailsViewModel(
     private val args: Route.ArtworkDetails by lazy { savedStateHandle.toRoute() }
 
     override val container = viewModelScope.container<State, SideEffect>(
-        initialState = State(artworkId = args.artworkId),
+        initialState = State(
+            artworkId = args.artworkId,
+            imageUrl = args.imageUrl,
+            imagePlaceholderMemoryCacheKey = args.imagePlaceholderMemoryCacheKey,
+        ),
         onCreate = { onCreate() }
     )
 

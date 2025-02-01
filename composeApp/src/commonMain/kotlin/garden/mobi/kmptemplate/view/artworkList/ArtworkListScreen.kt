@@ -38,6 +38,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
 import composemultiplatformtemplate.composeapp.generated.resources.Res
 import composemultiplatformtemplate.composeapp.generated.resources.artwork_list_screen_title
 import garden.mobi.kmptemplate.view.artworkList.ArtworkListViewModel.SideEffect
@@ -110,15 +112,18 @@ private fun Screen(
                             .aspectRatio(1f)
                             .clip(RoundedCornerShape(4.dp))
                             .background(Color.LightGray)
-                            .clickable { viewModel.artworkClicked(artwork.id) }
+                            .clickable { viewModel.artworkClicked(artwork) }
                         ) {
                             AsyncImage(
-                                model = artwork.imageUrl,
+                                model = ImageRequest.Builder(LocalPlatformContext.current)
+                                    .data(artwork.thumbnailUrl)
+                                    .memoryCacheKey(artwork.thumbnailUrl)
+                                    .build(),
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
-                                    .sharedElement(
-                                        state = sharedTransitionScope.rememberSharedContentState("${artwork.id}-image"),
+                                    .sharedBounds(
+                                        sharedTransitionScope.rememberSharedContentState("${artwork.id}-image"),
                                         animatedVisibilityScope = animatedVisibilityScope,
                                     )
                                     .fillMaxSize()

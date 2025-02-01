@@ -30,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichText
 import composemultiplatformtemplate.composeapp.generated.resources.Res
@@ -99,18 +101,26 @@ private fun Screen(
                 .verticalScroll(rememberScrollState())
         ) {
             with(sharedTransitionScope) {
-                AsyncImage(
-                    model = state.imageUrl,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .sharedElement(
-                            sharedTransitionScope.rememberSharedContentState("${state.artworkId}-image"),
-                            animatedVisibilityScope = animatedVisibilityScope,
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .sharedBounds(
+                        sharedTransitionScope.rememberSharedContentState("${state.artworkId}-image"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    )
+                ) {
+                    state.imageUrl?.let {
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalPlatformContext.current)
+                                .data(state.imageUrl)
+                                .placeholderMemoryCacheKey(state.imagePlaceholderMemoryCacheKey)
+                                .build(),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
                         )
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                )
+                    }
+                }
 
                 Text(
                     text = state.title,

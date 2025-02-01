@@ -5,7 +5,7 @@ import io.github.aakira.napier.Napier
 
 fun initLogger() = Napier.base(DebugAntilog())
 
-@Suppress("unused")
+@Suppress("unused", "NOTHING_TO_INLINE", "KotlinRedundantDiagnosticSuppress")
 object Logger {
     inline fun d(message: String, throwable: Throwable? = null) = Napier.d(message = message, throwable = throwable)
     inline fun w(message: String) = Napier.w(message = message)

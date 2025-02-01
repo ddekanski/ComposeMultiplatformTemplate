@@ -50,8 +50,16 @@ class ArtworkListViewModel(
             .launchIn(backgroundViewModelScope)
     }
 
-    fun artworkClicked(artworkId: String) = intent {
-        postSideEffect(SideEffect.Navigate(Route.ArtworkDetails(artworkId = artworkId)))
+    fun artworkClicked(artwork: ArtworkStub) = intent {
+        postSideEffect(
+            SideEffect.Navigate(
+                Route.ArtworkDetails(
+                    artworkId = artwork.id,
+                    imagePlaceholderMemoryCacheKey = artwork.thumbnailUrl,
+                    imageUrl = artwork.imageUrl,
+                )
+            )
+        )
     }
 
     private fun handleError(throwable: Throwable) = intent {
