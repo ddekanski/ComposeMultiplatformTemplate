@@ -66,6 +66,8 @@ kotlin {
             implementation(libs.coil.network.ktor)
 
             implementation(libs.richeditor.compose)
+
+            implementation(libs.napier.logging)
         }
     }
 }

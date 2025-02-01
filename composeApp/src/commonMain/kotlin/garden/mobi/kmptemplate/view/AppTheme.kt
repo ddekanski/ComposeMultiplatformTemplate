@@ -17,7 +17,11 @@ fun AppTheme(
         primary = Color.PrimaryLight
     )
 
-    MaterialTheme(colorScheme = colorScheme, content = content)
+    MaterialTheme(
+        typography = AppTypography(),
+        colorScheme = colorScheme,
+        content = content,
+    )
 }
 
 @Composable

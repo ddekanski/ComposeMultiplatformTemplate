@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,9 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
@@ -35,6 +34,8 @@ import composemultiplatformtemplate.composeapp.generated.resources.back
 import composemultiplatformtemplate.composeapp.generated.resources.ic_back_white_on_semitransparent
 import garden.mobi.kmptemplate.view.artworkDetails.ArtworkDetailsViewModel.SideEffect
 import garden.mobi.kmptemplate.view.artworkDetails.ArtworkDetailsViewModel.State
+import garden.mobi.kmptemplate.view.common.composable.ProgressIndicatorSurface
+import garden.mobi.kmptemplate.view.errorDialog.ErrorDialog
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -87,20 +88,21 @@ private fun Screen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            AsyncImage(
-                model = state.imageUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
+            state.imageUrl?.let {
+                AsyncImage(
+                    model = state.imageUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
 
-            )
+                )
+            }
 
             Text(
                 text = state.title,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier
                     .padding(top = 24.dp)
                     .padding(horizontal = 16.dp)
@@ -108,7 +110,7 @@ private fun Screen(
 
             Text(
                 text = state.type,
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 fontStyle = FontStyle.Italic,
                 modifier = Modifier
                     .padding(top = 24.dp)
@@ -117,7 +119,7 @@ private fun Screen(
 
             Text(
                 text = state.artist,
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 fontStyle = FontStyle.Italic,
                 modifier = Modifier
                     .padding(top = 12.dp)
@@ -129,7 +131,7 @@ private fun Screen(
                 richTextState.setHtml(state.description)
                 RichText(
                     state = richTextState,
-                    fontSize = 16.sp,
+                    style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier
                         .padding(top = 24.dp)
                         .padding(horizontal = 16.dp)
@@ -141,6 +143,14 @@ private fun Screen(
                 .padding(bottom = 8.dp)
             )
         }
+    }
+
+    if (state.showProgressIndicator) {
+        ProgressIndicatorSurface()
+    }
+
+    state.errorDialog?.let { error ->
+        ErrorDialog(error = error, onDismissed = { viewModel.errorDialogDismissed(error = error) })
     }
 }
 

@@ -7,4 +7,12 @@
     <string name="second_screen_title">Second screen</string>
     <string name="artwork_list_screen_title">Art Institute of Chicago</string>
     <string name="name_received_from_route_args">Name received from route args: %1$s</string>
+    <string name="connection_error_dialog_title">Connection error</string>
+    <string name="connection_error_dialog_desc">Sorry, it looks like we’re having trouble talking to the Joy servers at the moment. Please try again later.</string>
+    <string name="no_connection_dialog_title">No connection</string>
+    <string name="no_connection_dialog_desc">Sorry, you are currently not online. Please try again when you have a connection.</string>
+    <string name="generic_error_dialog_title">Oops! How embarrassing&#8230;</string>
+    <string name="generic_error_dialog_desc">An unexpected error occurred, we have been notified and will try to fix it.</string>
+    <string name="ok">Ok</string>
+    <string name="retry">Retry</string>
 </resources>

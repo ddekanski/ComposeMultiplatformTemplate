@@ -40,6 +40,8 @@ coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.re
 
 richeditor-compose = { module = "com.mohamedrejeb.richeditor:richeditor-compose", version = "1.0.0-rc10"} # RichText composable for HTML texts
 
+napier-logging = { module = "io.github.aakira:napier", version = "2.7.1" }
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }

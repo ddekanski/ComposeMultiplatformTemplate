@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +38,8 @@ import composemultiplatformtemplate.composeapp.generated.resources.Res
 import composemultiplatformtemplate.composeapp.generated.resources.artwork_list_screen_title
 import garden.mobi.kmptemplate.view.artworkList.ArtworkListViewModel.SideEffect
 import garden.mobi.kmptemplate.view.artworkList.ArtworkListViewModel.State
+import garden.mobi.kmptemplate.view.common.composable.ProgressIndicatorSurface
+import garden.mobi.kmptemplate.view.errorDialog.ErrorDialog
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -74,6 +77,7 @@ private fun Screen(
                 title = {
                     Text(
                         text = stringResource(Res.string.artwork_list_screen_title),
+                        style = MaterialTheme.typography.headlineLarge,
                     )
                 },
             )
@@ -110,9 +114,9 @@ private fun Screen(
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier
                                 .align(Alignment.BottomCenter)
-                                .padding(4.dp)
+                                .padding(8.dp)
                                 .background(color = Color.LightGray.copy(alpha = .7f), shape = RoundedCornerShape(2.dp))
-                                .padding(top = 0.dp, bottom = 0.dp, start = 4.dp, end = 4.dp)
+                                .padding(horizontal = 4.dp)
                         )
                     }
                 }
@@ -123,6 +127,14 @@ private fun Screen(
             }
         }
     )
+
+    if (state.showProgressIndicator) {
+        ProgressIndicatorSurface()
+    }
+
+    state.errorDialog?.let { error ->
+        ErrorDialog(error = error, onDismissed = { viewModel.errorDialogDismissed() })
+    }
 }
 
 private fun handleSideEffect(

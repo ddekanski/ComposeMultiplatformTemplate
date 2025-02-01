@@ -10,6 +10,8 @@ class MainApplication : Application() {
         // manually keeping context for shared KMP conf
         // see nativeConfig()
         instance = this
+
+        initLogger()
     }
 
     companion object {
