@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import garden.mobi.kmptemplate.Logger
 import garden.mobi.kmptemplate.domain.model.ArtworkStub
-import garden.mobi.kmptemplate.domain.repository.ArtworkRepository
+import garden.mobi.kmptemplate.domain.repository.ArtworkStubRepository
+import garden.mobi.kmptemplate.domain.util.DataResponse
 import garden.mobi.kmptemplate.view.Route
 import garden.mobi.kmptemplate.view.common.viewModel.backgroundViewModelScope
 import garden.mobi.kmptemplate.view.errorDialog.AppError
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -16,7 +16,7 @@ import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.container
 
 class ArtworkListViewModel(
-    private val artworkRepository: ArtworkRepository,
+    private val artworkStubRepository: ArtworkStubRepository,
 ) : ContainerHost<ArtworkListViewModel.State, ArtworkListViewModel.SideEffect>, ViewModel() {
 
     data class State(
@@ -35,18 +35,33 @@ class ArtworkListViewModel(
     )
 
     private fun onCreate() = intent {
-        artworkRepository
+        artworkStubRepository
             .getAllArtworkStubs()
             .onStart { reduce { state.copy(showProgressIndicator = true) } }
-            .onEach { artworkStubs ->
-                reduce {
-                    state.copy(
-                        showProgressIndicator = false,
-                        artworks = artworkStubs,
-                    )
+            .onEach { dataResponse ->
+                when (dataResponse) {
+                    is DataResponse.Data -> {
+                        val artworkStubs = dataResponse.data
+                        Logger.d("--- Loaded artwork stubs: $artworkStubs")
+                        reduce {
+                            state.copy(
+                                artworks = artworkStubs,
+                                showProgressIndicator = false,
+                            )
+                        }
+                    }
+
+                    is DataResponse.Loading -> {
+                        reduce {
+                            state.copy(showProgressIndicator = true)
+                        }
+                    }
+
+                    is DataResponse.Error -> {
+                        handleError(dataResponse.throwable)
+                    }
                 }
             }
-            .catch { handleError(it) }
             .launchIn(backgroundViewModelScope)
     }
 
@@ -75,5 +90,6 @@ class ArtworkListViewModel(
 
     fun errorDialogDismissed() = intent {
         reduce { state.copy(errorDialog = null) }
+        artworkStubRepository.triggerRefresh()
     }
 }

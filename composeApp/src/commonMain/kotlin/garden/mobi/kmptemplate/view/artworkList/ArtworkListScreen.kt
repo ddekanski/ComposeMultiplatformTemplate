@@ -114,20 +114,22 @@ private fun Screen(
                             .background(Color.LightGray)
                             .clickable { viewModel.artworkClicked(artwork) }
                         ) {
-                            AsyncImage(
-                                model = ImageRequest.Builder(LocalPlatformContext.current)
-                                    .data(artwork.thumbnailUrl)
-                                    .memoryCacheKey(artwork.thumbnailUrl)
-                                    .build(),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .sharedBounds(
-                                        sharedTransitionScope.rememberSharedContentState("${artwork.id}-image"),
-                                        animatedVisibilityScope = animatedVisibilityScope,
-                                    )
-                                    .fillMaxSize()
-                            )
+                            artwork.thumbnailUrl?.let {
+                                AsyncImage(
+                                    model = ImageRequest.Builder(LocalPlatformContext.current)
+                                        .data(artwork.thumbnailUrl)
+                                        .memoryCacheKey(artwork.thumbnailUrl)
+                                        .build(),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .sharedBounds(
+                                            sharedTransitionScope.rememberSharedContentState("${artwork.id}-image"),
+                                            animatedVisibilityScope = animatedVisibilityScope,
+                                        )
+                                        .fillMaxSize()
+                                )
+                            }
 
                             Text(
                                 text = artwork.title,

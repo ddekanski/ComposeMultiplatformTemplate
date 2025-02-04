@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS ArtworkStubEntity (
+    id TEXT PRIMARY KEY NOT NULL,
+    title TEXT NOT NULL,
+    thumbnailUrl TEXT,
+    imageUrl TEXT);
+
+selectAll:
+SELECT * FROM ArtworkStubEntity;
+
+deleteAll:
+DELETE FROM ArtworkStubEntity;
+
+insertOrUpdate:
+INSERT OR REPLACE INTO ArtworkStubEntity(id, title, thumbnailUrl, imageUrl) VALUES ?;

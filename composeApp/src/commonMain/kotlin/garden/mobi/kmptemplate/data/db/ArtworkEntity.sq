@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS ArtworkEntity (
+    id TEXT PRIMARY KEY NOT NULL,
+    title TEXT NOT NULL,
+    imageUrl TEXT,
+    date TEXT NOT NULL,
+    artist TEXT NOT NULL,
+    description TEXT,
+    type TEXT NOT NULL
+);
+
+selectAll:
+SELECT * FROM ArtworkEntity;
+
+
+selectById:
+SELECT * FROM ArtworkEntity WHERE id = ?;
+
+
+deleteAll:
+DELETE FROM ArtworkEntity;
+
+insertOrUpdate:
+INSERT OR REPLACE INTO ArtworkEntity(id, title, imageUrl, date, artist, description, type) VALUES ?;

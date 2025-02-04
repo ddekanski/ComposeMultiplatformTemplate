@@ -12,6 +12,8 @@ ksp = "2.1.10-1.0.29" # keep in sync with the Kotlin version (currently 2.1.10),
 ktorfit = "2.2.0"
 ktor = "3.0.1"
 coil3 = "3.0.4"
+sqldelight = "2.0.2"
+store = "5.1.0-alpha05"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -42,6 +44,14 @@ richeditor-compose = { module = "com.mohamedrejeb.richeditor:richeditor-compose"
 
 napier-logging = { module = "io.github.aakira:napier", version = "2.7.1" }
 
+sqlDelight-adapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
+sqlDelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
+sqlDelight-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+sqlDelight-ios = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
+
+store = { module = "org.mobilenativefoundation.store:store5", version.ref = "store" }
+
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
@@ -50,3 +60,4 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }

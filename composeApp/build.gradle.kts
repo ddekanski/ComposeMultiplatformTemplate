@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.ktorfit)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
@@ -35,7 +36,13 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
+            implementation(libs.sqlDelight.android)
         }
+
+        iosMain.dependencies {
+            implementation(libs.sqlDelight.ios) // you also need to add "-lsqlite3" flag in XCode > Build > Other linker flags, see https://github.com/sqldelight/sqldelight/issues/1442#issuecomment-2119043745
+        }
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -68,6 +75,11 @@ kotlin {
             implementation(libs.richeditor.compose)
 
             implementation(libs.napier.logging)
+
+            implementation(libs.sqlDelight.adapters)
+            implementation(libs.sqlDelight.coroutines)
+
+            implementation(libs.store)
         }
     }
 }
@@ -106,6 +118,15 @@ android {
     }
     dependencies {
         debugImplementation(compose.uiTooling)
+    }
+}
+
+sqldelight {
+    databases {
+        register("Database") {
+            packageName = "garden.mobi.kmptemplate.data.db"
+            srcDirs("src/commonMain/kotlin")
+        }
     }
 }
 
