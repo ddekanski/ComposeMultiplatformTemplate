@@ -16,4 +16,7 @@
     <string name="ok">Ok</string>
     <string name="retry">Retry</string>
     <string name="cannot_load_artwork">Cannot load an artwork. Check your Internet connection.</string>
+    <string name="favorites">Favorites</string>
+    <string name="add_to_favorites">Add to favorites</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
 </resources>

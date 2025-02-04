@@ -6,4 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface ArtworkRepository {
     suspend fun getArtwork(artworkId: String): Flow<DataResponse<Artwork>>
+    fun removeFromFavorites(artworkId: String)
+    fun addToFavorites(artworkId: String)
 }

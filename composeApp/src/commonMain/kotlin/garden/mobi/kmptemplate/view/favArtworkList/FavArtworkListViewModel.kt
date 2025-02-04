@@ -1,4 +1,4 @@
-package garden.mobi.kmptemplate.view.artworkList
+package garden.mobi.kmptemplate.view.favArtworkList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,9 +15,9 @@ import kotlinx.coroutines.flow.onStart
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.container
 
-class ArtworkListViewModel(
+class FavArtworkListViewModel(
     private val artworkStubRepository: ArtworkStubRepository,
-) : ContainerHost<ArtworkListViewModel.State, ArtworkListViewModel.SideEffect>, ViewModel() {
+) : ContainerHost<FavArtworkListViewModel.State, FavArtworkListViewModel.SideEffect>, ViewModel() {
 
     data class State(
         val artworks: List<ArtworkStub> = emptyList(),
@@ -27,6 +27,7 @@ class ArtworkListViewModel(
 
     sealed interface SideEffect {
         data class Navigate(val route: Route) : SideEffect
+        data object NavigateUp : SideEffect
     }
 
     override val container = viewModelScope.container<State, SideEffect>(
@@ -36,7 +37,7 @@ class ArtworkListViewModel(
 
     private fun onCreate() = intent {
         artworkStubRepository
-            .getAllArtworkStubs()
+            .getFavoriteArtworkStubs()
             .onStart { reduce { state.copy(showProgressIndicator = true) } }
             .onEach { dataResponse ->
                 when (dataResponse) {
@@ -78,14 +79,11 @@ class ArtworkListViewModel(
     }
 
     fun artworkFavIconClicked(artwork: ArtworkStub) = intent {
-        when (artwork.isFavorite) {
-            true -> artworkStubRepository.removeFromFavorites(artwork.id)
-            false -> artworkStubRepository.addToFavorites(artwork.id)
-        }
+        artworkStubRepository.removeFromFavorites(artwork.id)
     }
 
-    fun favoritesIconClicked() = intent {
-        postSideEffect(SideEffect.Navigate(Route.FavoriteArtworkList))
+    fun backClicked() = intent {
+        postSideEffect(SideEffect.NavigateUp)
     }
 
     private fun handleError(throwable: Throwable) = intent {

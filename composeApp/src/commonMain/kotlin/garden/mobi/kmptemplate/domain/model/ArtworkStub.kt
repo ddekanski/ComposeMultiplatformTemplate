@@ -5,4 +5,5 @@ data class ArtworkStub(
     val title: String,
     val thumbnailUrl: String?,
     val imageUrl: String?,
+    val isFavorite: Boolean,
 )

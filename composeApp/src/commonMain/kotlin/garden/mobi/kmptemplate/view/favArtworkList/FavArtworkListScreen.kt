@@ -1,8 +1,9 @@
-package garden.mobi.kmptemplate.view.artworkList
+package garden.mobi.kmptemplate.view.favArtworkList
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,17 +46,15 @@ import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import composemultiplatformtemplate.composeapp.generated.resources.Res
-import composemultiplatformtemplate.composeapp.generated.resources.add_to_favorites
-import composemultiplatformtemplate.composeapp.generated.resources.artwork_list_screen_title
-import composemultiplatformtemplate.composeapp.generated.resources.bookmark_empty
+import composemultiplatformtemplate.composeapp.generated.resources.back
 import composemultiplatformtemplate.composeapp.generated.resources.bookmark_filled
-import composemultiplatformtemplate.composeapp.generated.resources.bookmarks
 import composemultiplatformtemplate.composeapp.generated.resources.favorites
+import composemultiplatformtemplate.composeapp.generated.resources.ic_chevron_left
 import composemultiplatformtemplate.composeapp.generated.resources.remove_from_favorites
-import garden.mobi.kmptemplate.view.artworkList.ArtworkListViewModel.SideEffect
-import garden.mobi.kmptemplate.view.artworkList.ArtworkListViewModel.State
 import garden.mobi.kmptemplate.view.common.composable.ProgressIndicatorSurface
 import garden.mobi.kmptemplate.view.errorDialog.ErrorDialog
+import garden.mobi.kmptemplate.view.favArtworkList.FavArtworkListViewModel.SideEffect
+import garden.mobi.kmptemplate.view.favArtworkList.FavArtworkListViewModel.State
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -63,11 +62,11 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun ArtworkListScreen(
+fun FavArtworkListScreen(
     navController: NavHostController,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    viewModel: ArtworkListViewModel = koinViewModel(),
+    viewModel: FavArtworkListViewModel = koinViewModel(),
 ) {
     val state by viewModel.container.stateFlow.collectAsState()
 
@@ -93,24 +92,24 @@ private fun Screen(
     state: State,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    viewModel: ArtworkListViewModel,
+    viewModel: FavArtworkListViewModel,
 ) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = stringResource(Res.string.artwork_list_screen_title),
+                        text = stringResource(Res.string.favorites),
                         style = MaterialTheme.typography.headlineLarge,
                     )
                 },
-                actions = {
+                navigationIcon = {
                     IconButton(
-                        onClick = { viewModel.favoritesIconClicked() },
+                        onClick = { viewModel.backClicked() },
                     ) {
-                        Icon(
-                            painter = painterResource(Res.drawable.bookmarks),
-                            contentDescription = stringResource(Res.string.favorites),
+                        Image(
+                            painter = painterResource(Res.drawable.ic_chevron_left),
+                            contentDescription = stringResource(Res.string.back),
                         )
                     }
                 }
@@ -133,6 +132,7 @@ private fun Screen(
                             .aspectRatio(1f)
                             .clip(RoundedCornerShape(4.dp))
                             .background(Color.LightGray)
+                            .animateItem()
                             .clickable { viewModel.artworkClicked(artwork) }
                         ) {
                             artwork.thumbnailUrl?.let {
@@ -162,8 +162,8 @@ private fun Screen(
                                     .align(Alignment.TopEnd)
                             ) {
                                 Icon(
-                                    painter = painterResource(if (artwork.isFavorite) Res.drawable.bookmark_filled else Res.drawable.bookmark_empty),
-                                    contentDescription = stringResource(if (artwork.isFavorite) Res.string.remove_from_favorites else Res.string.add_to_favorites),
+                                    painter = painterResource(Res.drawable.bookmark_filled),
+                                    contentDescription = stringResource(Res.string.remove_from_favorites),
                                     modifier = Modifier
                                         .size(32.dp)
                                         .background(color = Color.LightGray.copy(alpha = .6f), shape = CircleShape)
@@ -215,5 +215,6 @@ private fun handleSideEffect(
 ) = sideEffect.apply {
     when(this) {
         is SideEffect.Navigate -> navController.navigate(route)
+        is SideEffect.NavigateUp -> navController.navigateUp()
     }
 }

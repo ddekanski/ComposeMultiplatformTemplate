@@ -8,4 +8,5 @@ data class Artwork(
     val artist: String,
     val description: String?,
     val type: String,
+    val isFavorite: Boolean,
 )

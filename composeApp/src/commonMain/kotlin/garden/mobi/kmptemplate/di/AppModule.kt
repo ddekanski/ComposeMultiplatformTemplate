@@ -1,22 +1,30 @@
 package garden.mobi.kmptemplate.di
 
+import com.russhwolf.settings.ExperimentalSettingsApi
+import com.russhwolf.settings.ObservableSettings
+import com.russhwolf.settings.Settings
+import com.russhwolf.settings.coroutines.FlowSettings
+import com.russhwolf.settings.coroutines.toFlowSettings
 import de.jensklingenberg.ktorfit.converter.CallConverterFactory
 import de.jensklingenberg.ktorfit.converter.FlowConverterFactory
 import de.jensklingenberg.ktorfit.ktorfit
 import garden.mobi.kmptemplate.data.datasource.ApiDataSource
 import garden.mobi.kmptemplate.data.datasource.ArtworkLocalDataSource
 import garden.mobi.kmptemplate.data.datasource.ArtworkStubLocalDataSource
+import garden.mobi.kmptemplate.data.datasource.FavoriteArtworkIdLocalDataSource
 import garden.mobi.kmptemplate.data.datasource.createApiDataSource
 import garden.mobi.kmptemplate.data.db.ArtworkEntityQueries
 import garden.mobi.kmptemplate.data.db.ArtworkStubEntityQueries
 import garden.mobi.kmptemplate.data.repository.ArtworkRepositoryImpl
 import garden.mobi.kmptemplate.data.repository.ArtworkStubRepositoryImpl
 import garden.mobi.kmptemplate.data.repository.UserRepositoryImpl
+import garden.mobi.kmptemplate.data.util.KeyValueStorage
 import garden.mobi.kmptemplate.domain.repository.ArtworkRepository
 import garden.mobi.kmptemplate.domain.repository.ArtworkStubRepository
 import garden.mobi.kmptemplate.domain.repository.UserRepository
-import garden.mobi.kmptemplate.view.artworkList.ArtworkListViewModel
 import garden.mobi.kmptemplate.view.artworkDetails.ArtworkDetailsViewModel
+import garden.mobi.kmptemplate.view.artworkList.ArtworkListViewModel
+import garden.mobi.kmptemplate.view.favArtworkList.FavArtworkListViewModel
 import garden.mobi.kmptemplate.view.greeting.GreetingViewModel
 import garden.mobi.kmptemplate.view.second.SecondViewModel
 import io.ktor.client.HttpClient
@@ -44,19 +52,30 @@ val koinConfig = koinConfiguration {
 
 expect fun platformModule(logEnabled: Boolean): Module
 
+@OptIn(ExperimentalSettingsApi::class)
 val appModule = module {
     viewModelOf(::GreetingViewModel)
     viewModelOf(::SecondViewModel)
     viewModelOf(::ArtworkListViewModel)
+    viewModelOf(::FavArtworkListViewModel)
     viewModelOf(::ArtworkDetailsViewModel)
 
     singleOf(::ArtworkStubEntityQueries)
     singleOf(::ArtworkEntityQueries)
+
     singleOf(::ArtworkStubLocalDataSource)
     singleOf(::ArtworkLocalDataSource)
+    singleOf(::FavoriteArtworkIdLocalDataSource)
+
     singleOf(::UserRepositoryImpl) { bind<UserRepository>() }
     singleOf(::ArtworkRepositoryImpl) { bind<ArtworkRepository>() }
     singleOf(::ArtworkStubRepositoryImpl) { bind<ArtworkStubRepository>() }
+
+    single<ObservableSettings> { Settings() as ObservableSettings }
+    single<FlowSettings> { get<ObservableSettings>().toFlowSettings() }
+
+    singleOf(::KeyValueStorage)
+
 
     single<ApiDataSource> {
         val ktorfit =

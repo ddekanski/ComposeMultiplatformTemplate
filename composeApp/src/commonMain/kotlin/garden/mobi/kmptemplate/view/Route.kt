@@ -14,6 +14,9 @@ sealed class Route {
     data object ArtworkList : Route()
 
     @Serializable
+    data object FavoriteArtworkList : Route()
+
+    @Serializable
     data class ArtworkDetails(
         val artworkId: String,
         val imageUrl: String? = null,

@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import garden.mobi.kmptemplate.di.koinConfig
 import garden.mobi.kmptemplate.view.artworkDetails.ArtworkDetailsScreen
 import garden.mobi.kmptemplate.view.artworkList.ArtworkListScreen
+import garden.mobi.kmptemplate.view.favArtworkList.FavArtworkListScreen
 import garden.mobi.kmptemplate.view.greeting.GreetingScreen
 import garden.mobi.kmptemplate.view.second.SecondScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -31,6 +32,14 @@ fun App() {
 
                     composable<Route.ArtworkList> {
                         ArtworkListScreen(
+                            navController = navController,
+                            sharedTransitionScope = this@SharedTransitionLayout,
+                            animatedVisibilityScope = this@composable,
+                        )
+                    }
+
+                    composable<Route.FavoriteArtworkList> {
+                        FavArtworkListScreen(
                             navController = navController,
                             sharedTransitionScope = this@SharedTransitionLayout,
                             animatedVisibilityScope = this@composable,

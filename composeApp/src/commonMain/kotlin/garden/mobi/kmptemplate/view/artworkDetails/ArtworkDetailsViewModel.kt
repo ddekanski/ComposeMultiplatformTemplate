@@ -33,6 +33,7 @@ class ArtworkDetailsViewModel(
         val description: String? = null,
         val artist: String = "",
         val type: String = "",
+        val isFavorite: Boolean = false,
         val showProgressIndicator: Boolean = false,
         val errorDialog: AppError? = null,
     )
@@ -69,6 +70,7 @@ class ArtworkDetailsViewModel(
                                 description = artwork.description,
                                 artist = artwork.artist,
                                 type = artwork.type,
+                                isFavorite = artwork.isFavorite,
                                 showProgressIndicator = false,
                             )
                         }
@@ -107,5 +109,12 @@ class ArtworkDetailsViewModel(
     fun errorDialogDismissed(error: AppError) = intent {
         reduce { state.copy(errorDialog = null) }
         if (error.finishOnDismiss) postSideEffect(SideEffect.NavigateBack)
+    }
+
+    fun favIconClicked() = intent {
+        when (state.isFavorite) {
+            true -> artworkRepository.removeFromFavorites(state.artworkId)
+            false -> artworkRepository.addToFavorites(state.artworkId)
+        }
     }
 }

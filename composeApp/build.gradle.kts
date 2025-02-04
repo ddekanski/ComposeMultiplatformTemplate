@@ -80,6 +80,10 @@ kotlin {
             implementation(libs.sqlDelight.coroutines)
 
             implementation(libs.store)
+
+            implementation(libs.multiplatform.settings.core)
+            implementation(libs.multiplatform.settings.serialization)
+            implementation(libs.multiplatform.settings.coroutines)
         }
     }
 }
