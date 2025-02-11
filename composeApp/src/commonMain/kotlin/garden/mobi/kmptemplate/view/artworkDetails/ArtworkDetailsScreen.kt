@@ -3,6 +3,8 @@ package garden.mobi.kmptemplate.view.artworkDetails
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -88,113 +90,119 @@ private fun Screen(
     viewModel: ArtworkDetailsViewModel,
 ) {
     Box {
-        IconButton(
-            onClick = { viewModel.backClicked() },
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 8.dp)
-                .statusBarsPadding()
-                .zIndex(2f)
-        ) {
-            Image(
-                painter = painterResource(Res.drawable.ic_back_white_on_semitransparent),
-                contentDescription = stringResource(Res.string.back),
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            with(sharedTransitionScope) {
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .sharedBounds(
-                        sharedTransitionScope.rememberSharedContentState("${state.artworkId}-image"),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    )
+        with(sharedTransitionScope) {
+            with(animatedVisibilityScope) {
+                IconButton(
+                    onClick = { viewModel.backClicked() },
+                    modifier = Modifier
+                        .renderInSharedTransitionScopeOverlay(zIndexInOverlay = 1f)
+                        .animateEnterExit(enter = fadeIn(), exit = fadeOut())
+                        .align(Alignment.TopStart)
+                        .padding(start = 8.dp)
+                        .statusBarsPadding()
+                        .zIndex(2f)
                 ) {
-                    state.imageUrl?.let {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalPlatformContext.current)
-                                .data(state.imageUrl)
-                                .placeholderMemoryCacheKey(state.imagePlaceholderMemoryCacheKey)
-                                .build(),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(bottom = 24.dp)
-                        )
-                    }
-
-                    IconButton(
-                        onClick = { viewModel.favIconClicked() },
-                        modifier = Modifier
-                            .sharedBounds(
-                                sharedTransitionScope.rememberSharedContentState("${state.artworkId}-favIcon"),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                            )
-                            .align(Alignment.BottomEnd)
-                            .padding(bottom = 0.dp, end = 32.dp)
-                            .background(color = Color.PrimaryLight, shape = CircleShape)
-                        ) {
-                        Icon(
-                            painter = painterResource(if (state.isFavorite) Res.drawable.bookmark_filled else Res.drawable.bookmark_empty),
-                            contentDescription = null,
-                        )
-                    }
+                    Image(
+                        painter = painterResource(Res.drawable.ic_back_white_on_semitransparent),
+                        contentDescription = stringResource(Res.string.back),
+                    )
                 }
 
-                Text(
-                    text = state.title,
-                    style = MaterialTheme.typography.headlineLarge,
+                Column(
                     modifier = Modifier
-                        .sharedBounds(
-                            sharedTransitionScope.rememberSharedContentState("${state.artworkId}-title"),
-                            animatedVisibilityScope = animatedVisibilityScope,
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                            .sharedBounds(
+                                sharedTransitionScope.rememberSharedContentState("${state.artworkId}-image"),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            )
+                    ) {
+                        state.imageUrl?.let {
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalPlatformContext.current)
+                                    .data(state.imageUrl)
+                                    .placeholderMemoryCacheKey(state.imagePlaceholderMemoryCacheKey)
+                                    .build(),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(bottom = 24.dp)
+                            )
+                        }
+
+                        IconButton(
+                            onClick = { viewModel.favIconClicked() },
+                            modifier = Modifier
+                                .sharedBounds(
+                                    sharedTransitionScope.rememberSharedContentState("${state.artworkId}-favIcon"),
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                )
+                                .align(Alignment.BottomEnd)
+                                .padding(bottom = 0.dp, end = 32.dp)
+                                .background(color = Color.PrimaryLight, shape = CircleShape)
+                        ) {
+                            Icon(
+                                painter = painterResource(if (state.isFavorite) Res.drawable.bookmark_filled else Res.drawable.bookmark_empty),
+                                contentDescription = null,
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = state.title,
+                        style = MaterialTheme.typography.headlineLarge,
+                        modifier = Modifier
+                            .sharedBounds(
+                                sharedTransitionScope.rememberSharedContentState("${state.artworkId}-title"),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            )
+                            .padding(top = 24.dp)
+                            .padding(horizontal = 16.dp)
+                    )
+
+                    Text(
+                        text = state.type,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontStyle = FontStyle.Italic,
+                        modifier = Modifier
+                            .padding(top = 24.dp)
+                            .padding(horizontal = 16.dp)
+                    )
+
+                    Text(
+                        text = state.artist,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontStyle = FontStyle.Italic,
+                        modifier = Modifier
+                            .padding(top = 12.dp)
+                            .padding(horizontal = 16.dp)
+                    )
+
+                    state.description?.let {
+                        val richTextState = rememberRichTextState()
+                        richTextState.setHtml(state.description)
+                        RichText(
+                            state = richTextState,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier
+                                .padding(top = 24.dp)
+                                .padding(horizontal = 16.dp)
                         )
-                        .padding(top = 24.dp)
-                        .padding(horizontal = 16.dp)
-                )
+                    }
+
+                    Spacer(
+                        modifier = Modifier
+                            .navigationBarsPadding()
+                            .padding(bottom = 8.dp)
+                    )
+                }
             }
-
-            Text(
-                text = state.type,
-                style = MaterialTheme.typography.bodyMedium,
-                fontStyle = FontStyle.Italic,
-                modifier = Modifier
-                    .padding(top = 24.dp)
-                    .padding(horizontal = 16.dp)
-            )
-
-            Text(
-                text = state.artist,
-                style = MaterialTheme.typography.bodyMedium,
-                fontStyle = FontStyle.Italic,
-                modifier = Modifier
-                    .padding(top = 12.dp)
-                    .padding(horizontal = 16.dp)
-            )
-
-            state.description?.let {
-                val richTextState = rememberRichTextState()
-                richTextState.setHtml(state.description)
-                RichText(
-                    state = richTextState,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
-                        .padding(top = 24.dp)
-                        .padding(horizontal = 16.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier
-                .navigationBarsPadding()
-                .padding(bottom = 8.dp)
-            )
         }
     }
 

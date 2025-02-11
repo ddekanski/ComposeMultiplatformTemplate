@@ -3,6 +3,8 @@ package garden.mobi.kmptemplate.view.artworkList
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -95,110 +97,115 @@ private fun Screen(
     animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: ArtworkListViewModel,
 ) {
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(Res.string.artwork_list_screen_title),
-                        style = MaterialTheme.typography.headlineLarge,
-                    )
-                },
-                actions = {
-                    IconButton(
-                        onClick = { viewModel.favoritesIconClicked() },
-                    ) {
-                        Icon(
-                            painter = painterResource(Res.drawable.bookmarks),
-                            contentDescription = stringResource(Res.string.favorites),
-                        )
-                    }
-                }
-            )
-        },
-        content = { padding ->
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(8.dp),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-            ) {
-                items(items = state.artworks, key = { it.id }) { artwork ->
-                    with (sharedTransitionScope) {
-                        Box(modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1f)
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(Color.LightGray)
-                            .clickable { viewModel.artworkClicked(artwork) }
-                        ) {
-                            artwork.thumbnailUrl?.let {
-                                AsyncImage(
-                                    model = ImageRequest.Builder(LocalPlatformContext.current)
-                                        .data(artwork.thumbnailUrl)
-                                        .memoryCacheKey(artwork.thumbnailUrl)
-                                        .build(),
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier
-                                        .sharedBounds(
-                                            sharedTransitionScope.rememberSharedContentState("${artwork.id}-image"),
-                                            animatedVisibilityScope = animatedVisibilityScope,
-                                        )
-                                        .fillMaxSize()
-                                )
-                            }
-
+    with(sharedTransitionScope) {
+        with(animatedVisibilityScope) {
+            Scaffold(
+                topBar = {
+                    CenterAlignedTopAppBar(
+                        title = {
+                            Text(
+                                text = stringResource(Res.string.artwork_list_screen_title),
+                                style = MaterialTheme.typography.headlineLarge,
+                            )
+                        },
+                        actions = {
                             IconButton(
-                                onClick = { viewModel.artworkFavIconClicked(artwork) },
-                                modifier = Modifier
-                                    .sharedBounds(
-                                        sharedTransitionScope.rememberSharedContentState("${artwork.id}-favIcon"),
-                                        animatedVisibilityScope = animatedVisibilityScope,
-                                    )
-                                    .align(Alignment.TopEnd)
+                                onClick = { viewModel.favoritesIconClicked() },
                             ) {
                                 Icon(
-                                    painter = painterResource(if (artwork.isFavorite) Res.drawable.bookmark_filled else Res.drawable.bookmark_empty),
-                                    contentDescription = stringResource(if (artwork.isFavorite) Res.string.remove_from_favorites else Res.string.add_to_favorites),
-                                    modifier = Modifier
-                                        .size(32.dp)
-                                        .background(color = Color.LightGray.copy(alpha = .6f), shape = CircleShape)
-                                        .padding(4.dp)
+                                    painter = painterResource(Res.drawable.bookmarks),
+                                    contentDescription = stringResource(Res.string.favorites),
                                 )
                             }
-
-                            Text(
-                                text = artwork.title,
-                                fontSize = 10.sp,
-                                minLines = 1,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier
-                                    .sharedBounds(
-                                        sharedTransitionScope.rememberSharedContentState("${artwork.id}-title"),
-                                        animatedVisibilityScope = animatedVisibilityScope,
-                                        zIndexInOverlay = 1f
+                        },
+                        modifier = Modifier
+                            .renderInSharedTransitionScopeOverlay(zIndexInOverlay = 1f)
+                            .animateEnterExit(enter = fadeIn(), exit = fadeOut())
+                    )
+                },
+                content = { padding ->
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(8.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                    ) {
+                        items(items = state.artworks, key = { it.id }) { artwork ->
+                            Box(modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1f)
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(Color.LightGray)
+                                .clickable { viewModel.artworkClicked(artwork) }
+                            ) {
+                                artwork.thumbnailUrl?.let {
+                                    AsyncImage(
+                                        model = ImageRequest.Builder(LocalPlatformContext.current)
+                                            .data(artwork.thumbnailUrl)
+                                            .memoryCacheKey(artwork.thumbnailUrl)
+                                            .build(),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .sharedBounds(
+                                                sharedTransitionScope.rememberSharedContentState("${artwork.id}-image"),
+                                                animatedVisibilityScope = animatedVisibilityScope,
+                                            )
+                                            .fillMaxSize()
                                     )
-                                    .align(Alignment.BottomCenter)
-                                    .padding(8.dp)
-                                    .background(color = Color.LightGray.copy(alpha = .7f), shape = RoundedCornerShape(2.dp))
-                                    .padding(horizontal = 4.dp)
-                                    .zIndex(1f)
-                            )
+                                }
+
+                                IconButton(
+                                    onClick = { viewModel.artworkFavIconClicked(artwork) },
+                                    modifier = Modifier
+                                        .sharedBounds(
+                                            sharedTransitionScope.rememberSharedContentState("${artwork.id}-favIcon"),
+                                            animatedVisibilityScope = animatedVisibilityScope,
+                                        )
+                                        .align(Alignment.TopEnd)
+                                ) {
+                                    Icon(
+                                        painter = painterResource(if (artwork.isFavorite) Res.drawable.bookmark_filled else Res.drawable.bookmark_empty),
+                                        contentDescription = stringResource(if (artwork.isFavorite) Res.string.remove_from_favorites else Res.string.add_to_favorites),
+                                        modifier = Modifier
+                                            .size(32.dp)
+                                            .background(color = Color.LightGray.copy(alpha = .6f), shape = CircleShape)
+                                            .padding(4.dp)
+                                    )
+                                }
+
+                                Text(
+                                    text = artwork.title,
+                                    fontSize = 10.sp,
+                                    minLines = 1,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier
+                                        .sharedBounds(
+                                            sharedTransitionScope.rememberSharedContentState("${artwork.id}-title"),
+                                            animatedVisibilityScope = animatedVisibilityScope,
+                                            zIndexInOverlay = 1f
+                                        )
+                                        .align(Alignment.BottomCenter)
+                                        .padding(8.dp)
+                                        .background(color = Color.LightGray.copy(alpha = .7f), shape = RoundedCornerShape(2.dp))
+                                        .padding(horizontal = 4.dp)
+                                        .zIndex(1f)
+                                )
+                            }
+                        }
+
+                        item {
+                            Spacer(modifier = Modifier.navigationBarsPadding())
                         }
                     }
                 }
-
-                item {
-                    Spacer(modifier = Modifier.navigationBarsPadding())
-                }
-            }
+            )
         }
-    )
+    }
 
     if (state.showProgressIndicator) {
         ProgressIndicatorSurface()
