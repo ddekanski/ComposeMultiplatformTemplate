@@ -63,6 +63,7 @@ kotlin {
             implementation(libs.ktorfit.converters.response)
             implementation(libs.ktorfit.converters.call)
             implementation(libs.ktorfit.converters.flow)
+            implementation(libs.ktor.client.logging)
             implementation(libs.ktor.client.serialization)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)

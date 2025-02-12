@@ -32,6 +32,7 @@ ktorfit-lib = {module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = 
 ktorfit-converters-response = {module = "de.jensklingenberg.ktorfit:ktorfit-converters-response", version.ref = "ktorfit"}
 ktorfit-converters-call = {module = "de.jensklingenberg.ktorfit:ktorfit-converters-call", version.ref = "ktorfit"}
 ktorfit-converters-flow = {module = "de.jensklingenberg.ktorfit:ktorfit-converters-flow", version.ref = "ktorfit"}
+ktor-client-logging = {module = "io.ktor:ktor-client-logging", version.ref = "ktor"}
 ktor-client-serialization = {module = "io.ktor:ktor-client-serialization", version.ref = "ktor"}
 ktor-client-content-negotiation = {module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor"}
 ktor-serialization-kotlinx-json = {module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor"}

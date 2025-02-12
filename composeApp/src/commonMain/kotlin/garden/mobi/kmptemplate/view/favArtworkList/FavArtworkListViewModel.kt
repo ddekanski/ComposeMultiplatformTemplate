@@ -43,7 +43,6 @@ class FavArtworkListViewModel(
                 when (dataResponse) {
                     is DataResponse.Data -> {
                         val artworkStubs = dataResponse.data
-                        Logger.d("--- Loaded artwork stubs: $artworkStubs")
                         reduce {
                             state.copy(
                                 artworks = artworkStubs,

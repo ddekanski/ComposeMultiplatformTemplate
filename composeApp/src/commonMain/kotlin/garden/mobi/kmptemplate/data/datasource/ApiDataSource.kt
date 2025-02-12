@@ -12,7 +12,7 @@ interface ApiDataSource {
         const val BASE_URL = "https://api.artic.edu/api/v1/"
     }
 
-    @GET("artworks?limit=50&fields=id,title,image_id")
+    @GET("artworks/search?q=monet&limit=100&fields=id,title,image_id")
     suspend fun getAllArtworks(): ApiResponseDto<List<ArtworkStubDto>>
 
     @GET("artworks/{id}?fields=id,title,image_id,date_display,artist_display,description,artwork_type_title")
