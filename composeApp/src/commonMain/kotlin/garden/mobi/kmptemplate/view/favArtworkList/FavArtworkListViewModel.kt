@@ -97,7 +97,11 @@ class FavArtworkListViewModel(
     }
 
     fun errorDialogDismissed() = intent {
-        reduce { state.copy(errorDialog = null) }
-        artworkStubRepository.triggerRefresh()
+        try {
+            reduce { state.copy(errorDialog = null, showProgressIndicator = true) }
+            artworkStubRepository.refresh()
+        } catch (throwable: Throwable) {
+            handleError(throwable = throwable)
+        }
     }
 }

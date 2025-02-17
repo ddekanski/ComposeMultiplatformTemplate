@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface ArtworkStubRepository {
     fun getAllArtworkStubs(): Flow<DataResponse<List<ArtworkStub>>>
     fun getFavoriteArtworkStubs(): Flow<DataResponse<List<ArtworkStub>>>
-    fun triggerRefresh()
+    suspend fun refresh()
     fun removeFromFavorites(artworkId: String)
     fun addToFavorites(artworkId: String)
 }

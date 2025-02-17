@@ -11,7 +11,6 @@ import garden.mobi.kmptemplate.view.common.viewModel.backgroundViewModelScope
 import garden.mobi.kmptemplate.view.errorDialog.AppError
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.container
 
@@ -21,7 +20,7 @@ class ArtworkListViewModel(
 
     data class State(
         val artworks: List<ArtworkStub> = emptyList(),
-        val showProgressIndicator: Boolean = false,
+        val isRefreshing: Boolean = false,
         val errorDialog: AppError? = null,
     )
 
@@ -37,7 +36,6 @@ class ArtworkListViewModel(
     private fun onCreate() = intent {
         artworkStubRepository
             .getAllArtworkStubs()
-            .onStart { reduce { state.copy(showProgressIndicator = true) } }
             .onEach { dataResponse ->
                 when (dataResponse) {
                     is DataResponse.Data -> {
@@ -45,14 +43,14 @@ class ArtworkListViewModel(
                         reduce {
                             state.copy(
                                 artworks = artworkStubs,
-                                showProgressIndicator = false,
+                                isRefreshing = false,
                             )
                         }
                     }
 
                     is DataResponse.Loading -> {
                         reduce {
-                            state.copy(showProgressIndicator = true)
+                            state.copy(isRefreshing = true)
                         }
                     }
 
@@ -87,19 +85,31 @@ class ArtworkListViewModel(
         postSideEffect(SideEffect.Navigate(Route.FavoriteArtworkList))
     }
 
+    fun refreshActionInvoked() = intent {
+        try {
+            reduce { state.copy(isRefreshing = true) }
+            artworkStubRepository.refresh()
+        } catch (throwable: Throwable) {
+            handleError(throwable = throwable)
+        }
+    }
+
     private fun handleError(throwable: Throwable) = intent {
-        reduce { state.copy(showProgressIndicator = false) }
         Logger.e(throwable)
         reduce {
             state.copy(
-                showProgressIndicator = false,
+                isRefreshing = false,
                 errorDialog = AppError.UnexpectedError(throwable = throwable, positiveBtn = AppError.PositiveBtn.RETRY)
             )
         }
     }
 
     fun errorDialogDismissed() = intent {
-        reduce { state.copy(errorDialog = null) }
-        artworkStubRepository.triggerRefresh()
+        try {
+            reduce { state.copy(errorDialog = null, isRefreshing = true) }
+            artworkStubRepository.refresh()
+        } catch (throwable: Throwable) {
+            handleError(throwable = throwable)
+        }
     }
 }

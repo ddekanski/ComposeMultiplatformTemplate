@@ -1,5 +1,13 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
+val javaVersion: JavaVersion by rootProject.extra
+val flavor: String by project
+val appIdSuffix = when (flavor) {
+    "dev" -> ".dev"
+    "prod" -> ""
+    else -> throw IllegalStateException()
+}
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
@@ -14,7 +22,7 @@ plugins {
 kotlin {
     androidTarget {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.fromTarget(libs.versions.jvm.get()))
         }
     }
     
@@ -44,6 +52,7 @@ kotlin {
         }
 
         commonMain.dependencies {
+            implementation(project(":flavors:$flavor"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -99,6 +108,13 @@ android {
 
     defaultConfig {
         applicationId = "garden.mobi.composemultiplatformtemplate"
+
+        manifestPlaceholders["appName"] = when(flavor) {
+            "prod" -> "CMP"
+            "dev"  -> "CMP DEV"
+            else -> throw IllegalStateException()
+        }
+
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -111,12 +127,21 @@ android {
     }
     buildTypes {
         getByName("release") {
+            isMinifyEnabled = true
+            manifestPlaceholders["appNameSuffix"] = ""
+            applicationIdSuffix = appIdSuffix
+        }
+
+        getByName("debug") {
             isMinifyEnabled = false
+            manifestPlaceholders["appNameSuffix"] = " Debug"
+            //noinspection GradlePath
+            applicationIdSuffix = "$appIdSuffix.debug"
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.jvm.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.jvm.get())
     }
     buildFeatures {
         compose = true

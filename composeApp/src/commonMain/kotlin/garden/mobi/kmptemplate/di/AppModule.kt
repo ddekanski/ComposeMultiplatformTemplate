@@ -10,6 +10,7 @@ import de.jensklingenberg.ktorfit.converter.FlowConverterFactory
 import de.jensklingenberg.ktorfit.ktorfit
 import garden.mobi.kmptemplate.data.datasource.ApiDataSource
 import garden.mobi.kmptemplate.data.datasource.ArtworkLocalDataSource
+import garden.mobi.kmptemplate.data.datasource.ArtworkStubApiDataSource
 import garden.mobi.kmptemplate.data.datasource.ArtworkStubLocalDataSource
 import garden.mobi.kmptemplate.data.datasource.FavoriteArtworkIdLocalDataSource
 import garden.mobi.kmptemplate.data.datasource.createApiDataSource
@@ -65,6 +66,8 @@ val appModule = module {
 
     singleOf(::ArtworkStubEntityQueries)
     singleOf(::ArtworkEntityQueries)
+
+    singleOf(::ArtworkStubApiDataSource)
 
     singleOf(::ArtworkStubLocalDataSource)
     singleOf(::ArtworkLocalDataSource)

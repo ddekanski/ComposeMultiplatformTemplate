@@ -30,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -57,7 +58,6 @@ import composemultiplatformtemplate.composeapp.generated.resources.favorites
 import composemultiplatformtemplate.composeapp.generated.resources.remove_from_favorites
 import garden.mobi.kmptemplate.view.artworkList.ArtworkListViewModel.SideEffect
 import garden.mobi.kmptemplate.view.artworkList.ArtworkListViewModel.State
-import garden.mobi.kmptemplate.view.common.composable.ProgressIndicatorSurface
 import garden.mobi.kmptemplate.view.errorDialog.ErrorDialog
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -125,92 +125,93 @@ private fun Screen(
                     )
                 },
                 content = { padding ->
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(8.dp),
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding)
+                    PullToRefreshBox(
+                        isRefreshing = state.isRefreshing,
+                        onRefresh = { viewModel.refreshActionInvoked() },
+                        modifier = Modifier.padding(padding)
                     ) {
-                        items(items = state.artworks, key = { it.id }) { artwork ->
-                            Box(modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(1f)
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(Color.LightGray)
-                                .clickable { viewModel.artworkClicked(artwork) }
-                            ) {
-                                artwork.thumbnailUrl?.let {
-                                    AsyncImage(
-                                        model = ImageRequest.Builder(LocalPlatformContext.current)
-                                            .data(artwork.thumbnailUrl)
-                                            .memoryCacheKey(artwork.thumbnailUrl)
-                                            .build(),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Crop,
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            contentPadding = PaddingValues(8.dp),
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            items(items = state.artworks, key = { it.id }) { artwork ->
+                                Box(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .aspectRatio(1f)
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .background(Color.LightGray)
+                                    .clickable { viewModel.artworkClicked(artwork) }
+                                ) {
+                                    artwork.thumbnailUrl?.let {
+                                        AsyncImage(
+                                            model = ImageRequest.Builder(LocalPlatformContext.current)
+                                                .data(artwork.thumbnailUrl)
+                                                .memoryCacheKey(artwork.thumbnailUrl)
+                                                .build(),
+                                            contentDescription = null,
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .sharedBounds(
+                                                    sharedTransitionScope.rememberSharedContentState("${artwork.id}-image"),
+                                                    animatedVisibilityScope = animatedVisibilityScope,
+                                                )
+                                                .fillMaxSize()
+                                        )
+                                    }
+
+                                    IconButton(
+                                        onClick = { viewModel.artworkFavIconClicked(artwork) },
                                         modifier = Modifier
                                             .sharedBounds(
-                                                sharedTransitionScope.rememberSharedContentState("${artwork.id}-image"),
+                                                sharedTransitionScope.rememberSharedContentState("${artwork.id}-favIcon"),
                                                 animatedVisibilityScope = animatedVisibilityScope,
                                             )
-                                            .fillMaxSize()
-                                    )
-                                }
-
-                                IconButton(
-                                    onClick = { viewModel.artworkFavIconClicked(artwork) },
-                                    modifier = Modifier
-                                        .sharedBounds(
-                                            sharedTransitionScope.rememberSharedContentState("${artwork.id}-favIcon"),
-                                            animatedVisibilityScope = animatedVisibilityScope,
+                                            .align(Alignment.TopEnd)
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(if (artwork.isFavorite) Res.drawable.bookmark_filled else Res.drawable.bookmark_empty),
+                                            contentDescription = stringResource(if (artwork.isFavorite) Res.string.remove_from_favorites else Res.string.add_to_favorites),
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .background(color = Color.LightGray.copy(alpha = .6f), shape = CircleShape)
+                                                .padding(4.dp)
                                         )
-                                        .align(Alignment.TopEnd)
-                                ) {
-                                    Icon(
-                                        painter = painterResource(if (artwork.isFavorite) Res.drawable.bookmark_filled else Res.drawable.bookmark_empty),
-                                        contentDescription = stringResource(if (artwork.isFavorite) Res.string.remove_from_favorites else Res.string.add_to_favorites),
+                                    }
+
+                                    Text(
+                                        text = artwork.title,
+                                        fontSize = 10.sp,
+                                        minLines = 1,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
                                         modifier = Modifier
-                                            .size(32.dp)
-                                            .background(color = Color.LightGray.copy(alpha = .6f), shape = CircleShape)
-                                            .padding(4.dp)
+                                            .sharedBounds(
+                                                sharedTransitionScope.rememberSharedContentState("${artwork.id}-title"),
+                                                animatedVisibilityScope = animatedVisibilityScope,
+                                                zIndexInOverlay = 1f
+                                            )
+                                            .align(Alignment.BottomCenter)
+                                            .padding(8.dp)
+                                            .background(color = Color.LightGray.copy(alpha = .7f), shape = RoundedCornerShape(2.dp))
+                                            .padding(horizontal = 4.dp)
+                                            .zIndex(1f)
                                     )
                                 }
-
-                                Text(
-                                    text = artwork.title,
-                                    fontSize = 10.sp,
-                                    minLines = 1,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier
-                                        .sharedBounds(
-                                            sharedTransitionScope.rememberSharedContentState("${artwork.id}-title"),
-                                            animatedVisibilityScope = animatedVisibilityScope,
-                                            zIndexInOverlay = 1f
-                                        )
-                                        .align(Alignment.BottomCenter)
-                                        .padding(8.dp)
-                                        .background(color = Color.LightGray.copy(alpha = .7f), shape = RoundedCornerShape(2.dp))
-                                        .padding(horizontal = 4.dp)
-                                        .zIndex(1f)
-                                )
                             }
-                        }
 
-                        item {
-                            Spacer(modifier = Modifier.navigationBarsPadding())
+                            item {
+                                Spacer(modifier = Modifier.navigationBarsPadding())
+                            }
                         }
                     }
                 },
                 contentWindowInsets = WindowInsets(0.dp), // remove navigation bar padding, see https://stackoverflow.com/a/77361483/1033645
             )
         }
-    }
-
-    if (state.showProgressIndicator) {
-        ProgressIndicatorSurface()
     }
 
     state.errorDialog?.let { error ->

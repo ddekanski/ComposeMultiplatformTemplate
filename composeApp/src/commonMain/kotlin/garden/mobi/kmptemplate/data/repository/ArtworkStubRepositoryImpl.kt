@@ -1,7 +1,6 @@
 package garden.mobi.kmptemplate.data.repository
 
-import garden.mobi.kmptemplate.Logger
-import garden.mobi.kmptemplate.data.datasource.ApiDataSource
+import garden.mobi.kmptemplate.data.datasource.ArtworkStubApiDataSource
 import garden.mobi.kmptemplate.data.datasource.ArtworkStubLocalDataSource
 import garden.mobi.kmptemplate.data.datasource.FavoriteArtworkIdLocalDataSource
 import garden.mobi.kmptemplate.data.db.ArtworkStubEntity
@@ -11,14 +10,12 @@ import garden.mobi.kmptemplate.data.util.mapToDataResponse
 import garden.mobi.kmptemplate.domain.model.ArtworkStub
 import garden.mobi.kmptemplate.domain.repository.ArtworkStubRepository
 import garden.mobi.kmptemplate.domain.util.DataResponse
-import garden.mobi.kmptemplate.domain.util.GlobalDefaultBackgroundScope
 import garden.mobi.kmptemplate.domain.util.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.SourceOfTruth
 import org.mobilenativefoundation.store.store5.Store
@@ -29,7 +26,7 @@ import org.mobilenativefoundation.store.store5.impl.extensions.fresh
 private const val DUMMY_KEY = ""
 
 class ArtworkStubRepositoryImpl(
-    private val apiDataSource: ApiDataSource,
+    private val apiDataSource: ArtworkStubApiDataSource,
     private val localDataSource: ArtworkStubLocalDataSource,
     private val favoriteArtworkIdLocalDataSource: FavoriteArtworkIdLocalDataSource,
 ) : ArtworkStubRepository {
@@ -83,14 +80,8 @@ class ArtworkStubRepositoryImpl(
             }
     }
 
-    override fun triggerRefresh() {
-        GlobalDefaultBackgroundScope().launch {
-            try {
-                store.fresh(key = DUMMY_KEY)
-            } catch (throwable: Throwable) {
-                Logger.e(message = "Cannot refresh artwork stubs", throwable = throwable)
-            }
-        }
+    override suspend fun refresh() {
+        store.fresh(key = DUMMY_KEY)
     }
 
     override fun addToFavorites(artworkId: String) {
